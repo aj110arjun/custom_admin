@@ -19,8 +19,8 @@ def login_user(request):
         return redirect('index')
 
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
+        username = request.POST.get('username')
+        password = request.POST.get('password')
 
         user = authenticate(request, username=username, password=password)
         if user is not None:
@@ -36,8 +36,11 @@ def login_user(request):
         else:
             messages.error(request, "Invalid username or password.")
             return redirect('login')
-
+    
+    # ✅ This line was missing!
     return render(request, 'login.html')
+
+
 
 
 
