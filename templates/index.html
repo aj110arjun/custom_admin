@@ -8,8 +8,9 @@
         <div class="col-md-6">
             <div class="card shadow-sm text-center">
                 <div class="card-body">
-                    <h1 class="mb-3 text-primary">Welcome, <span class="text-warning">{{ request.user.first_name | title }}</span></h1>
+                    <h1 class="mb-3 text-primary">Welcome, <span class="text-warning">{{ request.user.first_name | upper }}</span></h1>
                     <p class="lead mb-4">We're glad you're here. Let's get started!</p>
+                    <p class="text-success fw-bold">Your Email: {{request.user.email}}</p>
                     <a href="{% url 'logout' %}" class="btn btn-danger btn-lg">Logout</a>
                 </div>
             </div>

@@ -37,7 +37,6 @@ def login_user(request):
             messages.error(request, "Invalid username or password.")
             return redirect('login')
     
-    # ✅ This line was missing!
     return render(request, 'login.html')
 
 
@@ -46,6 +45,7 @@ def login_user(request):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def signup_user(request):
+    
     if request.user.is_authenticated:
         return redirect('index')
 
@@ -87,3 +87,5 @@ def logout_view(request):
     response.delete_cookie('last_login_email')
     messages.success(request, "Logged out successfully.")
     return response
+
+
