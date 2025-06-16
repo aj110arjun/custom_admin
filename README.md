@@ -5,7 +5,7 @@ To get started with this project, follow these steps:
 ## Installation
 1. Clone the repository:
    
-    git clone https://github.com/your-username/your-repo-name.git
+    git clone https://github.com/aj110arjun/custom_admin.git
    
 2. Navigate to the project directory:
    
