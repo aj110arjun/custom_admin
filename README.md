@@ -9,7 +9,7 @@ To get started with this project, follow these steps:
    
 2. Navigate to the project directory:
    
-    cd your-repo-name
+    cd custom_admin
 
 3. Install packages from requirements.txt:
 
