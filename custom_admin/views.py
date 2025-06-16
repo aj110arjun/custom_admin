@@ -10,6 +10,7 @@ from django.db.models import Q
 import re
 
 
+# Login View
 @never_cache
 def admin_login(request):
     if request.user.is_authenticated and request.user.is_staff:
@@ -35,6 +36,7 @@ def admin_login(request):
     return render(request, 'custom_admin/login.html')
 
 
+# Dashboard View
 @login_required(login_url='admin_login')
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def custom_admin_home(request):
@@ -60,6 +62,7 @@ def custom_admin_home(request):
     return render(request, 'custom_admin/main.html', context)
 
 
+# Staff View
 @login_required(login_url='admin_login')
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def users(request):
@@ -81,6 +84,7 @@ def users(request):
     return render(request, 'custom_admin/users.html', context)
 
 
+# Logout View
 @never_cache
 def logout_then_redirect(request):
     request.session.flush()
@@ -91,6 +95,8 @@ def logout_then_redirect(request):
 
     return response
 
+
+# Edit User View
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 @login_required(login_url='admin_login')
 def edit_user(request, user_id):
@@ -140,13 +146,15 @@ def edit_user(request, user_id):
     return render(request, 'custom_admin/edit_user.html', {'user': user, 'errors': errors})
 
 
-
+# Delete User View
 def delete_user(request, user_id):
     user = get_object_or_404(User, id=user_id)
     user.delete()
     messages.success(request, "User deleted successfully.")
     return redirect('users')
 
+
+# Nonstaff View
 @login_required(login_url='admin_login')
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def nonstaffs(request):
@@ -170,6 +178,7 @@ def nonstaffs(request):
     return render(request, 'custom_admin/nonstaff.html', context)
 
 
+# Create User View
 @login_required(login_url='admin_login')
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def create_user(request):
@@ -205,7 +214,6 @@ def create_user(request):
             errors['password'] = "Password must be at least 6 characters long."
 
         if errors:
-            # Re-render form with entered data and errors
             return render(request, 'custom_admin/create_user.html', {
                 'errors': errors,
                 'form_data': {
@@ -217,7 +225,6 @@ def create_user(request):
                 }
             })
 
-        # Create the user
         user = User.objects.create_user(
             username=username,
             email=email,
