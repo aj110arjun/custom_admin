@@ -46,11 +46,6 @@
                         {% endif %}
                     </div>
 
-                    <div class="form-check form-switch mb-4">
-                        <input type="checkbox" name="is_staff" class="form-check-input" id="staffCheck" {% if user.is_staff %}checked{% endif %}>
-                        <label class="form-check-label" for="staffCheck">Staff User</label>
-                    </div>
-
                     <hr>
 
                     <h5 class="mb-3 text-muted">Change Password <small class="fw-light">(optional)</small></h5>
@@ -71,7 +66,7 @@
 
                     <div class="d-flex justify-content-between mt-4">
                         <button type="submit" class="btn btn-success">Save Changes</button>
-                        <a href="{% url 'users' %}" class="btn btn-outline-secondary">Cancel</a>
+                        <a href="{% url 'nonstaffs' %}" class="btn btn-outline-secondary">Cancel</a>
                     </div>
                 </form>
             </div>

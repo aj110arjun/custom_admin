@@ -21,17 +21,30 @@ def admin_login(request):
         password = request.POST["password"]
         user = authenticate(request, username=username, password=password)
 
-        if user is not None and user.is_staff:  
-            login(request, user)
+        errors={}
 
-            request.session['admin_username'] = user.username
-            request.session.set_expiry(3600)  
+        if not username:
+            errors['username'] = "Username is required"
+        if not password:
+            errors['password'] = "Password is required"
 
-            response = redirect('custom_admin_home')
-            response.set_cookie('admin_email', user.email, max_age=7*24*60*60)  
-            return response
+        if user is not None: 
+            if user.is_staff:
+
+                login(request, user)
+
+                request.session['admin_username'] = user.username
+                request.session.set_expiry(3600)  
+
+                response = redirect('custom_admin_home')
+                response.set_cookie('admin_email', user.email, max_age=7*24*60*60)  
+                return response
+            else:
+                errors['username'] = 'Access denied. Not an admin user.'
+                return render(request, 'custom_admin/login.html', {'errors': errors, 'form_data': {'username':username}})
         else:
-            return render(request, 'custom_admin/login.html', {'error': 'Invalid credentials'})
+            errors['common'] = 'Invalid username or password'
+            return render(request, 'custom_admin/login.html', {'errors': errors, 'form_data': {'username':username}})
 
     return render(request, 'custom_admin/login.html')
 
@@ -42,7 +55,7 @@ def admin_login(request):
 def custom_admin_home(request):
     admin_name = request.session.get('admin_username', 'Unknown Admin')
     total_users = User.objects.count()
-    active_users = User.objects.filter(is_active=True).count()
+    active_users = User.objects.filter(is_staff=False).count()
     staff_users = User.objects.filter(is_staff=True).count()
 
     query = request.GET.get('q')
@@ -70,7 +83,6 @@ def users(request):
 
     if query:
         users = User.objects.filter(
-            Q(first_name__icontains=query) |
             Q(username__icontains=query) |
             Q(email__icontains=query)
         )
@@ -115,8 +127,8 @@ def edit_user(request, user_id):
         elif not re.match(r'^[A-Za-z]+$', user.first_name):
             errors['first_name'] = "First name must contain only letters."
 
-        if user.last_name and not re.match(r'^[A-Za-z]+$', user.last_name):
-            errors['last_name'] = "Last name must contain only letters."
+        if user.last_name and not re.match(r'^[A-Za-z\s]+$', user.last_name):
+            errors['last_name'] = "Last name must contain only letters and spaces."
 
         if not user.username:
             errors['username'] = "Username is required."
@@ -138,10 +150,9 @@ def edit_user(request, user_id):
         if not errors:
             user.save()
             messages.success(request, "User updated successfully.")
-            if user.is_staff:
-                return redirect('users')
-            else:
+            if not user.is_staff:
                 return redirect('nonstaffs')
+            
 
     return render(request, 'custom_admin/edit_user.html', {'user': user, 'errors': errors})
 
@@ -151,7 +162,7 @@ def delete_user(request, user_id):
     user = get_object_or_404(User, id=user_id)
     user.delete()
     messages.success(request, "User deleted successfully.")
-    return redirect('users')
+    return redirect('nonstaffs')
 
 
 # Nonstaff View
@@ -162,8 +173,6 @@ def nonstaffs(request):
 
     if query:
         users = User.objects.filter(
-            Q(first_name__icontains=query) |
-            Q(last_name__icontains=query) |
             Q(username__icontains=query) |
             Q(email__icontains=query)
         )
@@ -194,10 +203,17 @@ def create_user(request):
 
         if not first_name:
             errors['first_name'] = "First name is required."
+        elif not re.match(r'^[A-Za-z]+$', first_name):
+            errors['first_name'] = "First name must contain only letters."
+
+        if last_name and not re.match(r'^[A-Za-z\s]+$', last_name):
+            errors['last_name'] = "Last name must contain only letters and spaces."
+
         if not username:
             errors['username'] = "Username is required."
         elif User.objects.filter(username=username).exists():
             errors['username'] = "Username already exists."
+
         if not email:
             errors['email'] = "Email is required."
         else:
@@ -234,7 +250,7 @@ def create_user(request):
             is_staff=is_staff
         )
         messages.success(request, "User created successfully.")
-        return redirect('users')
+        return redirect('nonstaffs')
 
     return render(request, 'custom_admin/create_user.html')
 
