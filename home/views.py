@@ -61,7 +61,7 @@ def login_user(request):
 
             return response
         else:
-            errors['username'] = "Invalid username"
+            errors['common'] = "Invalid username or password"
             return render(request, 'login.html', {
                 'errors': errors,
                 'form_data': {'username': username}

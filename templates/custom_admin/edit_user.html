@@ -14,7 +14,7 @@
                     {% csrf_token %}
 
                     <div class="mb-3">
-                        <label class="form-label" for="firstName">First Name <span style='color: red;'>*</span></label>
+                        <label class="form-label" for="firstName">First Name <span class="text-danger">*</span></label>
                         <input type="text" name="first_name" id="firstName" class="form-control {% if errors.first_name %}is-invalid{% endif %}" value="{{ user.first_name }}">
                         {% if errors.first_name %}
                             <div class="text-danger">{{ errors.first_name }}</div>
@@ -45,24 +45,27 @@
                             <div class="text-danger">{{ errors.email }}</div>
                         {% endif %}
                     </div>
-
+                    <br>
                     <hr>
+                    <br>
 
                     <h5 class="mb-3 text-muted">Change Password <small class="fw-light">(optional)</small></h5>
 
                     <div class="mb-3">
                         <label class="form-label" for="new_password">New Password</label>
-                        <input type="password" name="new_password" id="new_password" class="form-control" placeholder="Leave blank to keep current password">
+                        <input type="password" name="new_password" id="new_password" class="form-control {% if errors.password %}is-invalid{% endif %}" placeholder="Leave blank to keep current password">
+                        {% if errors.password %}
+                            <div class="text-danger">{{ errors.password }}</div>
+                        {% endif %}
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label" for="confirm_password">Confirm Password</label>
-                        <input type="password" name="confirm_password" id="confirm_password" class="form-control" placeholder="Retype new password">
+                        <input type="password" name="confirm_password" id="confirm_password" class="form-control {% if errors.password %}is-invalid{% endif %}" placeholder="Retype new password">
+                        {% if errors.password %}
+                            <div class="text-danger">{{ errors.password }}</div>
+                        {% endif %}
                     </div>
-
-                    {% if errors.password %}
-                        <div class="alert alert-danger">{{ errors.password }}</div>
-                    {% endif %}
 
                     <div class="d-flex justify-content-between mt-4">
                         <button type="submit" class="btn btn-success">Save Changes</button>
